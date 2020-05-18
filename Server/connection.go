@@ -1,0 +1,96 @@
+package Server
+
+import (
+	"FTPserver/Commands"
+	"FTPserver/Configuration"
+	"FTPserver/Connection"
+	"FTPserver/Replies"
+	"fmt"
+	"net"
+	"net/textproto"
+	"os"
+	"strings"
+)
+
+const preambleText = "Welcome to mhendren FTP\nTesting that this will handle more than 2 lines\nlike this"
+const openPreambleText = "Welcome to mhendren FTP\nThis is a free for all\nNo account needed to browse"
+
+func connectionLog(connectionSocket net.Conn) {
+	fmt.Printf("connection from: %v\n", connectionSocket.RemoteAddr())
+}
+
+var connectionStatus Connection.Status
+
+func connectionPreamble(connectionSocket net.Conn, config Configuration.FTPConfig) {
+	var err error
+	if config.AllowNoLogin {
+		_, err = fmt.Fprint(connectionSocket, Replies.CreateReplyUserLoggedIn(openPreambleText))
+	} else {
+		_, err = fmt.Fprint(connectionSocket, Replies.CreateReplyReadyForNewUser(preambleText))
+	}
+	if err != nil {
+		fmt.Printf("error writing data: %v\n", err)
+	}
+}
+
+func splitData(dataLine string) (string, string) {
+	split := strings.SplitAfterN(dataLine, " ", 2)
+	var command string
+	var args string
+	if len(split) > 0 {
+		command = split[0]
+		if len(split) > 1 {
+			args = split[1]
+		}
+	}
+	return strings.TrimSpace(command), strings.TrimSpace(args)
+}
+
+func commandLoop(connectionSocket net.Conn, config Configuration.FTPConfig) {
+	tp := textproto.NewConn(connectionSocket)
+
+	for connectionStatus.IsConnected() {
+		line, err := tp.ReadLine()
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			break
+		}
+		fmt.Printf("read %v bytes: %v\n", len(line), line)
+		command, args := splitData(line)
+		if !connectionStatus.CanUseCommand(command) {
+			_, _ = fmt.Fprint(connectionSocket, Replies.CreateReplyBadCommandSequence())
+			continue
+		}
+		fmt.Printf("command %v -> args %v\n", command, args)
+		commandFunction, ok := Commands.GetCommandFunction(command, &connectionStatus, config)
+		if !ok {
+			_, err = fmt.Fprint(connectionSocket, Replies.CreateReplySyntaxError())
+			if err != nil {
+				_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
+			}
+			continue
+		}
+		commandResult := commandFunction.Execute(args)
+		fmt.Printf("Command result: %v\n", commandResult)
+		_, err = fmt.Fprint(connectionSocket, commandResult)
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
+		}
+	}
+}
+
+func connectionHandle(connectionSocket net.Conn, config Configuration.FTPConfig) {
+	defer connectionSocket.Close()
+	connectionStatus = Connection.Status{
+		Connected:     false,
+		Remote:        connectionSocket.RemoteAddr().String(),
+		Authenticated: false,
+		Anonymous:     false,
+		User:          "",
+		CurrentPath:   "",
+	}
+	connectionStatus.Connect()
+	connectionLog(connectionSocket)
+	connectionPreamble(connectionSocket, config)
+	commandLoop(connectionSocket, config)
+}
