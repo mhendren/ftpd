@@ -1,13 +1,38 @@
 package Connection
 
+import (
+	"FTPserver/Replies"
+	"fmt"
+	"net"
+	"os"
+)
+
+type TransferMode int
+
+const (
+	Active int = iota
+	Passive
+)
+
+func (tm TransferMode) String() string {
+	return [...]string{"Active", "Passive"}[tm]
+}
+
 type Status struct {
 	Connected          bool
+	CommandConnection  net.Conn
+	DataConnected      bool
+	DataConnection     net.Conn
 	Remote             string
 	Authenticated      bool
 	Anonymous          bool
 	User               string
 	CurrentPath        string
 	AcceptableCommands map[string]bool
+	TypeCode           string
+	FormCode           string
+	LocalByteSize      uint8
+	Mode               TransferMode
 }
 
 func (cs *Status) Connect() {
@@ -16,6 +41,17 @@ func (cs *Status) Connect() {
 
 func (cs *Status) Disconnect() {
 	cs.Connected = false
+}
+
+func (cs *Status) DataConnect(conn net.Conn) {
+	cs.DataConnected = true
+	cs.DataConnection = conn
+}
+
+func (cs *Status) DataDisconnect() {
+	cs.DataConnection.Close()
+	cs.DataConnected = false
+	cs.DataConnection = nil
 }
 
 func (cs *Status) IsConnected() bool {
@@ -52,4 +88,11 @@ func (cs *Status) CanUseCommand(command string) bool {
 	}
 	_, ok := cs.AcceptableCommands[command]
 	return ok
+}
+
+func (cs Status) SendFTPReply(reply Replies.FTPReply) {
+	_, err := fmt.Fprint(cs.CommandConnection, reply)
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "SendFTPReply: %v\n", err)
+	}
 }

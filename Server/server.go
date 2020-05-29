@@ -4,6 +4,9 @@ import (
 	"FTPserver/Configuration"
 	"fmt"
 	"net"
+	"os"
+	"os/user"
+	"path/filepath"
 )
 
 var ftpConfig Configuration.FTPConfig
@@ -18,9 +21,15 @@ func SetupConnection() net.Listener {
 }
 
 func Loop(listenSocket net.Listener) {
+	usr, err := user.Current()
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		return
+	}
 	ftpConfig = Configuration.FTPConfig{
 		AllowAnonymous: true,
 		AllowNoLogin:   true,
+		RootPath:       filepath.Join(usr.HomeDir, "FTPRoot"),
 	}
 	for {
 		connectionSocket, err := listenSocket.Accept()

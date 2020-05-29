@@ -70,24 +70,23 @@ func commandLoop(connectionSocket net.Conn, config Configuration.FTPConfig) {
 			}
 			continue
 		}
-		commandResult := commandFunction.Execute(args)
-		fmt.Printf("Command result: %v\n", commandResult)
-		_, err = fmt.Fprint(connectionSocket, commandResult)
-		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
-		}
+		connectionStatus.SendFTPReply(commandFunction.Execute(args))
 	}
 }
 
 func connectionHandle(connectionSocket net.Conn, config Configuration.FTPConfig) {
 	defer connectionSocket.Close()
 	connectionStatus = Connection.Status{
-		Connected:     false,
-		Remote:        connectionSocket.RemoteAddr().String(),
-		Authenticated: false,
-		Anonymous:     false,
-		User:          "",
-		CurrentPath:   "",
+		Connected:         false,
+		CommandConnection: connectionSocket,
+		Remote:            connectionSocket.RemoteAddr().String(),
+		Authenticated:     false,
+		Anonymous:         false,
+		User:              "",
+		CurrentPath:       config.RootPath,
+		TypeCode:          "ASCII",
+		FormCode:          "Non-print",
+		Mode:              Connection.TransferMode(Connection.Active),
 	}
 	connectionStatus.Connect()
 	connectionLog(connectionSocket)

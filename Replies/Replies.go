@@ -151,10 +151,16 @@ func CreateReplyFileActionCompleted() FTPReply {
 	}
 }
 
-func CreateReplyPathnameCreated(pathname string) FTPReply {
+func CreateReplyPathnameCreated(pathname string, isCreated bool) FTPReply {
+	createdFunc := func(str string) string {
+		if isCreated {
+			return fmt.Sprintf("%v created")
+		}
+		return str
+	}
 	return FTPReply{
 		Code:    257,
-		Message: fmt.Sprintf("\"%v\" created"),
+		Message: createdFunc(fmt.Sprintf("\"%v\"", pathname)),
 	}
 }
 
