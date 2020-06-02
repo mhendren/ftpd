@@ -29,7 +29,7 @@ func GetCommandFunction(command string, cs *Connection.Status, config Configurat
 		"STRU": NotImplemented{},
 		"MODE": NotImplemented{},
 		"RETR": NotImplemented{},
-		"STOR": NotImplemented{},
+		"STOR": STOR{cs: cs},
 		"STOU": NotImplemented{},
 		"APPE": NotImplemented{},
 		"ALLO": NotImplemented{},

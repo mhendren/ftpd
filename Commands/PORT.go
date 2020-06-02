@@ -30,7 +30,8 @@ func (cmd PORT) Execute(args string) Replies.FTPReply {
 	port := uint16(hiPort*256) + uint16(loPort)
 	destination := fmt.Sprintf("%v.%v.%v.%v:%v", segments[0], segments[1], segments[2], segments[3], port)
 	localIP := strings.Split(cmd.cs.CommandConnection.LocalAddr().String(), ":")
-	local, _ := net.ResolveTCPAddr("tcp4", fmt.Sprintf("%v:20", localIP[0]))
+	localPort, _ := strconv.Atoi(localIP[1])
+	local, _ := net.ResolveTCPAddr("tcp4", fmt.Sprintf("%v:%v", localIP[0], (uint16)(localPort-1)))
 	remote, _ := net.ResolveTCPAddr("tcp4", destination)
 	conn, err := net.DialTCP("tcp4", local, remote)
 	if err != nil {
