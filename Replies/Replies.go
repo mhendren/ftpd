@@ -144,17 +144,17 @@ func CreateReplyUserLoggedIn(message string) FTPReply {
 	}
 }
 
-func CreateReplyFileActionCompleted() FTPReply {
+func CreateReplyFileActionCompleted(filename string) FTPReply {
 	return FTPReply{
 		Code:    250,
-		Message: "Requested file action okay, completed",
+		Message: fmt.Sprintf("\"%v\" Requested file action okay, completed", filename),
 	}
 }
 
 func CreateReplyPathnameCreated(pathname string, isCreated bool) FTPReply {
 	createdFunc := func(str string) string {
 		if isCreated {
-			return fmt.Sprintf("%v created")
+			return fmt.Sprintf("%v created", str)
 		}
 		return str
 	}

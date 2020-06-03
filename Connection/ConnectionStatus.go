@@ -49,7 +49,9 @@ func (cs *Status) DataConnect(conn net.Conn) {
 }
 
 func (cs *Status) DataDisconnect() {
-	cs.DataConnection.Close()
+	if cs.DataConnection != nil {
+		cs.DataConnection.Close()
+	}
 	cs.DataConnected = false
 	cs.DataConnection = nil
 }

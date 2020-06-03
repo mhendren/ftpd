@@ -13,7 +13,7 @@ type TYPE struct {
 
 func (cmd TYPE) Execute(args string) Replies.FTPReply {
 	getForm := func(arg []string) string {
-		if len(arg) > 1 || strings.ToLower(arg[1]) == "t" {
+		if len(arg) > 1 && strings.ToLower(arg[1]) == "t" {
 			return "Telnet format effectors"
 		} else if len(arg) > 1 && strings.ToLower(arg[1]) == "c" {
 			return "Carriage Control"
