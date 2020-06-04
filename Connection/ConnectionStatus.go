@@ -33,6 +33,7 @@ type Status struct {
 	FormCode           string
 	LocalByteSize      uint8
 	Mode               TransferMode
+	RenameFrom         string
 }
 
 func (cs *Status) Connect() {
