@@ -94,6 +94,10 @@ func (cs *Status) CanUseCommand(command string) bool {
 }
 
 func (cs Status) SendFTPReply(reply Replies.FTPReply) {
+	if reply.Code < 0 {
+		_, _ = fmt.Fprintf(os.Stderr, "SendFTPReply: No action requested (communication handled by Command)")
+		return
+	}
 	_, err := fmt.Fprint(cs.CommandConnection, reply)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "SendFTPReply: %v\n", err)

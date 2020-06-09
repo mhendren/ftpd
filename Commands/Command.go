@@ -24,7 +24,7 @@ func GetCommandFunction(command string, cs *Connection.Status, config Configurat
 		"QUIT": QUIT{cs: cs},
 		"REIN": NotImplemented{},
 		"PORT": PORT{cs: cs},
-		"PASV": NotImplemented{},
+		"PASV": PASV{cs: cs},
 		"TYPE": TYPE{cs: cs},
 		"STRU": NotImplemented{},
 		"MODE": NotImplemented{},

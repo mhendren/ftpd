@@ -4,12 +4,21 @@ import (
 	"encoding/binary"
 	"fmt"
 	"net"
+	"os"
+	"strconv"
 	"strings"
 )
 
 type FTPReply struct {
 	Code    int16
 	Message string
+}
+
+func CreateReplyNoAction() FTPReply {
+	return FTPReply{
+		Code:    -1,
+		Message: "No action",
+	}
 }
 
 func CreateReplyRestartMarker(userMarker uint32, serverMarker uint32) FTPReply {
@@ -123,14 +132,26 @@ func CreateReplyClosingDataConnection() FTPReply {
 	}
 }
 
-func CreateReplyEnteringPassiveMode(addr net.IPAddr, port uint16) FTPReply {
+func CreateReplyEnteringPassiveMode(addr net.Addr) FTPReply {
+	address := strings.Split(addr.String(), ":")
+	if len(address) != 2 {
+		return CreateReplySyntaxError()
+	}
 	netPort := make([]byte, 2)
-	binary.BigEndian.PutUint16(netPort, port)
-	address := addr.IP.To4()
+	portNum, err := strconv.Atoi(address[1])
+	if err != nil {
+		return CreateReplySyntaxError()
+	}
+	binary.BigEndian.PutUint16(netPort, uint16(portNum))
+	ipAddress := strings.Split(address[0], ".")
+	if len(ipAddress) != 4 {
+		return CreateReplySyntaxError()
+	}
+	_, _ = fmt.Fprintf(os.Stderr, "Entering Passive Mode (%v,%v,%v,%v,%v,%v)", ipAddress[0], ipAddress[1], ipAddress[2], ipAddress[3], netPort[0], netPort[1])
 	return FTPReply{
 		Code: 227,
 		Message: fmt.Sprintf("Entering Passive Mode (%v,%v,%v,%v,%v,%v)",
-			address[0], address[1], address[2], address[3], netPort[0], netPort[1]),
+			ipAddress[0], ipAddress[1], ipAddress[2], ipAddress[3], netPort[0], netPort[1]),
 	}
 }
 
