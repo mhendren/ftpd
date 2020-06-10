@@ -10,8 +10,8 @@ type FTPCommand interface {
 	Execute(args string) Replies.FTPReply
 }
 
-func GetCommandFunction(command string, cs *Connection.Status, config Configuration.FTPConfig) (FTPCommand, bool) {
-	commandMap := map[string]FTPCommand{
+func GetCommandMap(cs *Connection.Status, config Configuration.FTPConfig) map[string]FTPCommand {
+	return map[string]FTPCommand{
 		// Standard RFC-959 Command Set
 		"USER": USER{cs: cs},
 		"NOOP": NOOP{},
@@ -46,7 +46,7 @@ func GetCommandFunction(command string, cs *Connection.Status, config Configurat
 		"SITE": NotImplemented{},
 		"SYST": NotImplemented{},
 		"STAT": NotImplemented{},
-		"HELP": NotImplemented{},
+		"HELP": HELP{cs: cs, config: config},
 
 		// RFC-1639 Command Set
 		"LPRT": NotImplemented{},
@@ -84,15 +84,19 @@ func GetCommandFunction(command string, cs *Connection.Status, config Configurat
 		"HOST": NotImplemented{},
 
 		// RFC-775,743,737 We do not do this Command Set
-		"XCUP": NotImplemented{},
-		"XMKD": NotImplemented{},
-		"XPWD": NotImplemented{},
-		"XRCP": NotImplemented{},
-		"XRMD": NotImplemented{},
-		"XRSQ": NotImplemented{},
-		"XSEM": NotImplemented{},
-		"XSEN": NotImplemented{},
+		"XCUP": Undefined{},
+		"XMKD": Undefined{},
+		"XPWD": Undefined{},
+		"XRCP": Undefined{},
+		"XRMD": Undefined{},
+		"XRSQ": Undefined{},
+		"XSEM": Undefined{},
+		"XSEN": Undefined{},
 	}
+}
+
+func GetCommandFunction(command string, cs *Connection.Status, config Configuration.FTPConfig) (FTPCommand, bool) {
+	commandMap := GetCommandMap(cs, config)
 	cmd, ok := commandMap[command]
 	return cmd, ok
 }

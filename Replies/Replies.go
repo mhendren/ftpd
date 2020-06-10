@@ -12,6 +12,7 @@ import (
 type FTPReply struct {
 	Code    int16
 	Message string
+	Interim bool
 }
 
 func CreateReplyNoAction() FTPReply {
@@ -88,6 +89,7 @@ func CreateReplyHelpMessage(message string) FTPReply {
 	return FTPReply{
 		Code:    214,
 		Message: message,
+		Interim: false,
 	}
 }
 
@@ -329,11 +331,18 @@ func (ftpReply FTPReply) String() string {
 	messageSplit := strings.SplitAfter(ftpReply.Message, "\n")
 	count := len(messageSplit)
 	if count > 1 {
-		str := fmt.Sprintf("%v- %v\r\n", ftpReply.Code, messageSplit[0])
+		line := strings.TrimSuffix(messageSplit[0], "\n")
+		str := fmt.Sprintf("%v- %v\r\n", ftpReply.Code, line)
 		for i := 1; i < (count - 1); i++ {
-			str += fmt.Sprintf("  %v %v\r\n", ftpReply.Code, messageSplit[i])
+			line = strings.TrimSuffix(messageSplit[i], "\n")
+			if ftpReply.Interim {
+				str += fmt.Sprintf("  %v %v\r\n", ftpReply.Code, line)
+			} else {
+				str += fmt.Sprintf("%v\r\n", line)
+			}
 		}
-		str += fmt.Sprintf("%v %v\r\n", ftpReply.Code, messageSplit[count-1])
+		line = strings.TrimSuffix(messageSplit[count-1], "\n")
+		str += fmt.Sprintf("%v %v\r\n", ftpReply.Code, line)
 		return str
 	}
 	return fmt.Sprintf("%v %v\r\n", ftpReply.Code, ftpReply.Message)
