@@ -5,4 +5,6 @@ type FTPConfig struct {
 	AllowNoLogin   bool
 	RootPath       string
 	BasePort       uint16
+	SystemType     string
+	Version        string
 }

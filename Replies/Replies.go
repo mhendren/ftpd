@@ -89,7 +89,7 @@ func CreateReplyHelpMessage(message string) FTPReply {
 	return FTPReply{
 		Code:    214,
 		Message: message,
-		Interim: false,
+		Interim: true,
 	}
 }
 
@@ -335,7 +335,7 @@ func (ftpReply FTPReply) String() string {
 		str := fmt.Sprintf("%v- %v\r\n", ftpReply.Code, line)
 		for i := 1; i < (count - 1); i++ {
 			line = strings.TrimSuffix(messageSplit[i], "\n")
-			if ftpReply.Interim {
+			if !ftpReply.Interim {
 				str += fmt.Sprintf("  %v %v\r\n", ftpReply.Code, line)
 			} else {
 				str += fmt.Sprintf("%v\r\n", line)

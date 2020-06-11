@@ -44,8 +44,8 @@ func GetCommandMap(cs *Connection.Status, config Configuration.FTPConfig) map[st
 		"LIST": LIST{cs: cs, abbreviated: false},
 		"NLST": LIST{cs: cs, abbreviated: true},
 		"SITE": NotImplemented{},
-		"SYST": NotImplemented{},
-		"STAT": NotImplemented{},
+		"SYST": SYST{config: config},
+		"STAT": STAT{cs: cs, config: config},
 		"HELP": HELP{cs: cs, config: config},
 
 		// RFC-1639 Command Set

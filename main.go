@@ -21,6 +21,7 @@ func main() {
 		AllowNoLogin:   true,
 		RootPath:       filepath.Join(usr.HomeDir, "FTPRoot"),
 		BasePort:       21,
+		Version:        "gFTP v0.1",
 	}
 
 	server := Server.SetupConnection(ftpConfig)
