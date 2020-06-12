@@ -13,11 +13,11 @@ type FTPCommand interface {
 func GetCommandMap(cs *Connection.Status, config Configuration.FTPConfig) map[string]FTPCommand {
 	return map[string]FTPCommand{
 		// Standard RFC-959 Command Set
-		"USER": USER{cs: cs},
+		"USER": USER{cs: cs, config: config},
 		"NOOP": NOOP{},
 
 		"PASS": PASS{cs: cs, config: config},
-		"ACCT": NotImplemented{},
+		"ACCT": ACCT{cs: cs, config: config},
 		"CWD":  CWD{cs: cs, isCDUP: false},
 		"CDUP": CWD{cs: cs, isCDUP: true},
 		"SMNT": NotImplemented{},

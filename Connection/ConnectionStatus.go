@@ -51,6 +51,7 @@ type Status struct {
 	Authenticated      bool
 	Anonymous          bool
 	User               string
+	Account            string
 	CurrentPath        string
 	AcceptableCommands map[string]bool
 	TypeCode           string

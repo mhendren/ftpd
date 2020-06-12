@@ -4,6 +4,7 @@ import (
 	"FTPserver/Configuration"
 	"FTPserver/Connection"
 	"FTPserver/Server"
+	"FTPserver/Validation/Implemntation"
 	"fmt"
 	"os"
 	"os/user"
@@ -19,14 +20,23 @@ func main() {
 
 	ftpConfig := Configuration.FTPConfig{
 		AllowAnonymous:      true,
-		AllowNoLogin:        true,
+		AllowNoLogin:        false,
+		AllowAccount:        false,
+		RequiresUser:        true,
+		RequiresPassword:    true,
+		RequiresAccount:     false,
 		RootPath:            filepath.Join(usr.HomeDir, "FTPRoot"),
 		BasePort:            21,
 		Version:             fmt.Sprintf("%v %v", Server.Name, Server.VersionNumber),
 		SupportedStructures: []Connection.Structure{Connection.Structure(Connection.File)},
 		SupportedModes:      []Connection.TransferMode{Connection.TransferMode(Connection.Stream)},
+		AccountValidator:    nil,
+		AnonymousUsers:      []string{"anonymous", "ftp"},
 	}
-
+	ftpConfig.PasswordValidator = Implemntation.AnonymousOnlyValidator{
+		AllowAnonymous: true,
+		AnonymousUsers: ftpConfig.AnonymousUsers,
+	}
 	server := Server.SetupConnection(ftpConfig)
 	Server.Loop(ftpConfig, server)
 }
