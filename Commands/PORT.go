@@ -15,6 +15,7 @@ type PORT struct {
 }
 
 func (cmd PORT) Execute(args string) Replies.FTPReply {
+	cmd.cs.Type = Connection.TransferType(Connection.Active)
 	segments := strings.Split(args, ",")
 	if len(segments) != 6 {
 		return Replies.CreateReplySyntaxErrorInParameters()

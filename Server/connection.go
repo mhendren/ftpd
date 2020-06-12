@@ -86,7 +86,9 @@ func connectionHandle(connectionSocket net.Conn, config Configuration.FTPConfig)
 		CurrentPath:       config.RootPath,
 		TypeCode:          "ASCII",
 		FormCode:          "Non-print",
-		Mode:              Connection.TransferMode(Connection.Active),
+		Type:              Connection.TransferType(Connection.Active),
+		Structure:         Connection.Structure(Connection.File),
+		Mode:              Connection.TransferMode(Connection.Stream),
 	}
 	connectionStatus.Connect()
 	connectionLog(connectionSocket)

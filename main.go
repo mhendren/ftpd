@@ -2,6 +2,7 @@ package main
 
 import (
 	"FTPserver/Configuration"
+	"FTPserver/Connection"
 	"FTPserver/Server"
 	"fmt"
 	"os"
@@ -17,11 +18,13 @@ func main() {
 	}
 
 	ftpConfig := Configuration.FTPConfig{
-		AllowAnonymous: true,
-		AllowNoLogin:   true,
-		RootPath:       filepath.Join(usr.HomeDir, "FTPRoot"),
-		BasePort:       21,
-		Version:        "gFTP v0.1",
+		AllowAnonymous:      true,
+		AllowNoLogin:        true,
+		RootPath:            filepath.Join(usr.HomeDir, "FTPRoot"),
+		BasePort:            21,
+		Version:             fmt.Sprintf("%v %v", Server.Name, Server.VersionNumber),
+		SupportedStructures: []Connection.Structure{Connection.Structure(Connection.File)},
+		SupportedModes:      []Connection.TransferMode{Connection.TransferMode(Connection.Stream)},
 	}
 
 	server := Server.SetupConnection(ftpConfig)

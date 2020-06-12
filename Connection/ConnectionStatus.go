@@ -7,15 +7,39 @@ import (
 	"os"
 )
 
-type TransferMode int
+type TransferType int
 
 const (
 	Active int = iota
 	Passive
 )
 
+type Structure int
+
+const (
+	File int = iota
+	Record
+	Page
+)
+
+type TransferMode int
+
+const (
+	Stream int = iota
+	Block
+	Compressed
+)
+
+func (tt TransferType) String() string {
+	return [...]string{"Active", "Passive"}[tt]
+}
+
+func (stru Structure) String() string {
+	return [...]string{"File", "Record", "Page"}[stru]
+}
+
 func (tm TransferMode) String() string {
-	return [...]string{"Active", "Passive"}[tm]
+	return [...]string{"Stream", "Block", "Compressed"}[tm]
 }
 
 type Status struct {
@@ -32,8 +56,10 @@ type Status struct {
 	TypeCode           string
 	FormCode           string
 	LocalByteSize      uint8
-	Mode               TransferMode
+	Type               TransferType
 	RenameFrom         string
+	Structure          Structure
+	Mode               TransferMode
 }
 
 func (cs *Status) Connect() {

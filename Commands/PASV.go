@@ -14,12 +14,14 @@ type PASV struct {
 }
 
 func (cmd PASV) Execute(_ string) Replies.FTPReply {
-	disconnect := func(mesg string, err error) Replies.FTPReply {
+	disconnect := func(message string, err error) Replies.FTPReply {
 		cmd.cs.Disconnect()
-		_, _ = fmt.Fprintln(os.Stderr, "Disconnecting (error creating PASV listening socket)")
+		_, _ = fmt.Fprintln(os.Stderr, message)
 		_, _ = fmt.Fprintln(os.Stderr, fmt.Errorf("error: %s", err))
 		return Replies.CreateReplyNotAvailableClosingConnection()
 	}
+
+	cmd.cs.Type = Connection.TransferType(Connection.Passive)
 
 	if cmd.cs.DataConnected {
 		return Replies.CreateReplyBadCommandSequence()

@@ -23,7 +23,7 @@ func ExecuteSystem(cs *Connection.Status, config Configuration.FTPConfig) Replie
 	} else {
 		message += fmt.Sprintf("Logged in as \"%v\"\n", cs.User)
 	}
-	message += fmt.Sprintf("TYPE: %v, FORM: %v\n", cs.Mode, cs.FormCode)
+	message += fmt.Sprintf("TYPE: %v, FORM: %v, MODE: %v, STRU: %v\n", cs.TypeCode, cs.FormCode, cs.Mode, cs.Structure)
 	message += fmt.Sprintf("Current Path: %v\n", cs.CurrentPath)
 	message += fmt.Sprintf("Data Connected: %v\n", cs.DataConnected)
 
