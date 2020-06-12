@@ -33,7 +33,7 @@ func (cmd PASV) Execute(_ string) Replies.FTPReply {
 	}
 	localListenIP := strings.Split(listenSocket.Addr().String(), ":")
 	if len(localListenIP) < 2 {
-		disconnect("Disconnecting, could not read port number for local socket", nil)
+		return disconnect("Disconnecting, could not read port number for local socket", nil)
 	}
 	cmd.cs.SendFTPReply(Replies.CreateReplyEnteringPassiveMode(listenSocket.Addr()))
 	connectionSocket, err := listenSocket.Accept()
