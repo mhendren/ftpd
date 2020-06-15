@@ -13,6 +13,7 @@ import (
 type STOR struct {
 	cs       *Connection.Status
 	isUnique bool
+	isAppend bool
 }
 
 func (cmd STOR) Execute(args string) Replies.FTPReply {
@@ -29,7 +30,11 @@ func (cmd STOR) Execute(args string) Replies.FTPReply {
 		}
 	} else {
 		fileName := filepath.Join(cmd.cs.CurrentPath, args)
-		file, err = os.Create(fileName)
+		if cmd.isAppend {
+			file, err = os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
+		} else {
+			file, err = os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE, 0666)
+		}
 		if file == nil || err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "failed to Create file: %v\n", fileName)
 			return Replies.CreateReplyRequestedActionNotTaken()
