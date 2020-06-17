@@ -36,7 +36,7 @@ func GetCommandMap(cs *Connection.Status, config Configuration.FTPConfig) map[st
 		// Updated in 3659 "REST": NotImplemented{},
 		"RNFR": RNFR{cs: cs},
 		"RNTO": RNTO{cs: cs},
-		"ABOR": NotImplemented{},
+		"ABOR": ABOR{cs: cs},
 		"DELE": DELE{cs: cs},
 		"RMD":  RMD{cs: cs},
 		"MKD":  MKD{cs: cs},
