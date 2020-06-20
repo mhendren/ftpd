@@ -3,6 +3,7 @@ package Configuration
 import (
 	"FTPserver/Connection"
 	"FTPserver/Validation"
+	"os"
 )
 
 type FTPConfig struct {
@@ -21,4 +22,6 @@ type FTPConfig struct {
 	SupportedModes      []Connection.TransferMode
 	AccountValidator    Validation.AccountValidator
 	PasswordValidator   Validation.PasswordValidator
+	Umask               os.FileMode
+	IdleTimeout         int
 }

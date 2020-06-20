@@ -43,7 +43,7 @@ func GetCommandMap(cs *Connection.Status, config Configuration.FTPConfig) map[st
 		"PWD":  PWD{cs: cs},
 		"LIST": LIST{cs: cs, abbreviated: false},
 		"NLST": LIST{cs: cs, abbreviated: true},
-		"SITE": NotImplemented{},
+		"SITE": SITE{cs: cs, config: config},
 		"SYST": SYST{config: config},
 		"STAT": STAT{cs: cs, config: config},
 		"HELP": HELP{cs: cs, config: config},

@@ -32,6 +32,8 @@ func main() {
 		SupportedModes:      []Connection.TransferMode{Connection.TransferMode(Connection.Stream)},
 		AccountValidator:    nil,
 		AnonymousUsers:      []string{"anonymous", "ftp"},
+		Umask:               os.FileMode(0022),
+		IdleTimeout:         60,
 	}
 	ftpConfig.PasswordValidator = Implemntation.AnonymousOnlyValidator{
 		AllowAnonymous: true,

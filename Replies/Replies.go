@@ -57,6 +57,13 @@ func CreateReplyCommandOkay() FTPReply {
 	}
 }
 
+func CreateReplyCommandOkayCustom(message string) FTPReply {
+	return FTPReply{
+		Code:    200,
+		Message: message,
+	}
+}
+
 func CreateReplyCommandNotImplementedSuperfluous() FTPReply {
 	return FTPReply{
 		Code:    202,

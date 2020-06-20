@@ -21,7 +21,7 @@ func (cmd HELP) Execute(_ string) Replies.FTPReply {
 	}
 	sort.Strings(keys)
 
-	outStr := "\n    Site recognized commands\n    ('-' are not implemented)\n"
+	outStr := "\n    Recognized commands\n    ('-' are not implemented)\n"
 	outCount := 0
 	for _, k := range keys {
 		vType := reflect.TypeOf(commandSet[k]).String()

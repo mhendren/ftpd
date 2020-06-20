@@ -89,6 +89,8 @@ func connectionHandle(connectionSocket net.Conn, config Configuration.FTPConfig)
 		Type:              Connection.TransferType(Connection.Active),
 		Structure:         Connection.Structure(Connection.File),
 		Mode:              Connection.TransferMode(Connection.Stream),
+		Umask:             config.Umask,
+		IdleTimeout:       config.IdleTimeout,
 	}
 	connectionStatus.Connect()
 	connectionLog(connectionSocket)

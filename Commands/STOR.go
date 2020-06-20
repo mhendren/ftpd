@@ -31,9 +31,9 @@ func (cmd STOR) Execute(args string) Replies.FTPReply {
 	} else {
 		fileName := filepath.Join(cmd.cs.CurrentPath, args)
 		if cmd.isAppend {
-			file, err = os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
+			file, err = os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666&cmd.cs.Umask)
 		} else {
-			file, err = os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE, 0666)
+			file, err = os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE, 0666&cmd.cs.Umask)
 		}
 		if file == nil || err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "failed to Create file: %v\n", fileName)

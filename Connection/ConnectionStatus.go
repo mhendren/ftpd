@@ -61,6 +61,8 @@ type Status struct {
 	RenameFrom         string
 	Structure          Structure
 	Mode               TransferMode
+	Umask              os.FileMode
+	IdleTimeout        int
 }
 
 func (cs *Status) Connect() {
