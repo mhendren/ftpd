@@ -5,6 +5,7 @@ import (
 	"FTPserver/Replies"
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
 type LIST struct {
@@ -45,7 +46,27 @@ func (ld LONGDIR) String() string {
 		mtime.Format("Jan 02 2006"), name)
 }
 
-func GetLongDirList(path string, abbreviated bool) ([]LONGDIR, error) {
+func GetGlobbedDirList(glob string, path string, abbreviated bool) ([]LONGDIR, error) {
+	updatedGlob := filepath.Join(path, glob)
+	fileList, err := filepath.Glob(updatedGlob)
+	if err != nil {
+		return nil, err
+	}
+	dirData := make([]LONGDIR, len(fileList))
+	for i, v := range fileList {
+		fileStatus, err := os.Stat(v)
+		if err != nil {
+			return nil, err
+		}
+		dirData[i] = LONGDIR{FileInfo: fileStatus, abbreviated: abbreviated}
+	}
+	return dirData, nil
+}
+
+func GetLongDirList(glob string, path string, abbreviated bool) ([]LONGDIR, error) {
+	if glob != "" {
+		return GetGlobbedDirList(glob, path, abbreviated)
+	}
 	f, err := os.OpenFile(path, 0, 0)
 	if err != nil {
 		return nil, err
@@ -59,12 +80,12 @@ func GetLongDirList(path string, abbreviated bool) ([]LONGDIR, error) {
 	return dirData, err
 }
 
-func (cmd LIST) Execute(_ string) Replies.FTPReply {
+func (cmd LIST) Execute(args string) Replies.FTPReply {
 	if cmd.cs.DataConnected {
 		defer cmd.cs.DataDisconnect()
 	}
 	// by default assume LIST of current directory
-	fileInfo, err := GetLongDirList(cmd.cs.CurrentPath, cmd.abbreviated)
+	fileInfo, err := GetLongDirList(args, cmd.cs.CurrentPath, cmd.abbreviated)
 	if err != nil {
 		cmd.cs.DataDisconnect()
 		Replies.CreateReplyClosingDataConnection()
