@@ -49,7 +49,7 @@ func GetCommandMap(cs *Connection.Status, config Configuration.FTPConfig) map[st
 		"HELP": HELP{cs: cs, config: config},
 
 		// RFC-1639 Command Set
-		"LPRT": NotImplemented{},
+		"LPRT": LPRT{cs: cs},
 		"LRSV": NotImplemented{},
 
 		// RFC-2228 Command Set
