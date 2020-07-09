@@ -164,26 +164,11 @@ func CreateReplyEnteringPassiveMode(addr net.Addr) FTPReply {
 	}
 }
 
-func CreateReplyEnteringLongPassiveMode(addr net.Addr) FTPReply {
-	address := strings.Split(addr.String(), ":")
-	if len(address) != 2 {
-		return CreateReplySyntaxError()
-	}
-	netPort := make([]byte, 2)
-	portNum, err := strconv.Atoi(address[1])
-	if err != nil {
-		return CreateReplySyntaxError()
-	}
-	binary.BigEndian.PutUint16(netPort, uint16(portNum))
-	ipAddress := strings.Split(address[0], ".")
-	if len(ipAddress) != 4 {
-		return CreateReplySyntaxError()
-	}
-	_, _ = fmt.Fprintf(os.Stderr, "Entering Passive Mode (%v,%v,%v,%v,%v,%v)", ipAddress[0], ipAddress[1], ipAddress[2], ipAddress[3], netPort[0], netPort[1])
+func CreateReplyEnteringLongPassiveMode(address string) FTPReply {
+	_, _ = fmt.Fprintf(os.Stderr, "Entering Passive Mode (%v)\n", address)
 	return FTPReply{
-		Code: 228,
-		Message: fmt.Sprintf("Entering Passive Mode (%v,%v,%v,%v,%v,%v)",
-			ipAddress[0], ipAddress[1], ipAddress[2], ipAddress[3], netPort[0], netPort[1]),
+		Code:    228,
+		Message: fmt.Sprintf("Entering Passive Mode (%v)", address),
 	}
 }
 
