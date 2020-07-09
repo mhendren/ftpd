@@ -164,6 +164,14 @@ func CreateReplyEnteringPassiveMode(addr net.Addr) FTPReply {
 	}
 }
 
+func CreateReplyEnteringLongPassiveMode(address string) FTPReply {
+	_, _ = fmt.Fprintf(os.Stderr, "Entering Passive Mode (%v)\n", address)
+	return FTPReply{
+		Code:    228,
+		Message: fmt.Sprintf("Entering Passive Mode (%v)", address),
+	}
+}
+
 func CreateReplyUserLoggedIn(message string) FTPReply {
 	if message == "" {
 		message = "User logged in, proceed"
@@ -289,6 +297,21 @@ func CreateReplyCommandNotImplementedForParameter() FTPReply {
 	return FTPReply{
 		Code:    504,
 		Message: "Command not implemented for that parameter",
+	}
+}
+
+func CreateReplySupportedAddressFamilies(list []int) FTPReply {
+	message := "Supported address families are ("
+	for i, af := range list {
+		if i != 0 {
+			message += ", "
+		}
+		message += fmt.Sprintf("%v", af)
+	}
+	message += ")"
+	return FTPReply{
+		Code:    521,
+		Message: message,
 	}
 }
 
