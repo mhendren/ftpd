@@ -315,6 +315,14 @@ func CreateReplySupportedAddressFamilies(list []int) FTPReply {
 	}
 }
 
+func CreateReplyUnsupportedExtendedPortProtocol(supportedProtocols string) FTPReply {
+	message := fmt.Sprintf("Unsupported network protocol, use (%v)", supportedProtocols)
+	return FTPReply{
+		Code:    522,
+		Message: message,
+	}
+}
+
 func CreateReplyNotLoggedIn() FTPReply {
 	return FTPReply{
 		Code:    530,
