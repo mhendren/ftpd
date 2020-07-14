@@ -63,6 +63,8 @@ type Status struct {
 	Mode               TransferMode
 	Umask              os.FileMode
 	IdleTimeout        int
+	PreferredEProtocol int
+	EPSVAll            bool
 }
 
 func (cs *Status) Connect() {

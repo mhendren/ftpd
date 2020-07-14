@@ -18,12 +18,12 @@ type EPRTExecutor interface {
 	Execute() Replies.FTPReply
 }
 
-type IPv4Executor struct {
+type IPv4EPRTExecutor struct {
 	cmd    EPRT
 	fields []string
 }
 
-type IPv6Executor struct {
+type IPv6EPRTExecutor struct {
 	cmd    EPRT
 	fields []string
 }
@@ -32,7 +32,7 @@ func (cmd EPRT) String() string {
 	return ""
 }
 
-func (executor IPv4Executor) Execute() Replies.FTPReply {
+func (executor IPv4EPRTExecutor) Execute() Replies.FTPReply {
 	address := executor.fields[1]
 	port := executor.fields[2]
 	destination := fmt.Sprintf("%v:%v", address, port)
@@ -49,7 +49,7 @@ func (executor IPv4Executor) Execute() Replies.FTPReply {
 	return Replies.CreateReplyCommandOkay()
 }
 
-func (executor IPv6Executor) Execute() Replies.FTPReply {
+func (executor IPv6EPRTExecutor) Execute() Replies.FTPReply {
 	address := executor.fields[1]
 	port := executor.fields[2]
 
@@ -70,6 +70,9 @@ func (executor IPv6Executor) Execute() Replies.FTPReply {
 }
 
 func (cmd EPRT) Execute(args string) Replies.FTPReply {
+	if cmd.cs.EPSVAll {
+		return Replies.CreateReplyBadCommandSequence()
+	}
 	if args == "" {
 		return Replies.CreateReplySyntaxErrorInParameters()
 	}
@@ -85,8 +88,8 @@ func (cmd EPRT) Execute(args string) Replies.FTPReply {
 	fields = fields[1:4]
 
 	executors := map[int]EPRTExecutor{
-		1: IPv4Executor{cmd: cmd, fields: fields},
-		2: IPv6Executor{cmd: cmd, fields: fields},
+		1: IPv4EPRTExecutor{cmd: cmd, fields: fields},
+		2: IPv6EPRTExecutor{cmd: cmd, fields: fields},
 	}
 
 	netProtocol, err := strconv.Atoi(fields[0])

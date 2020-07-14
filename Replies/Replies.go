@@ -172,6 +172,14 @@ func CreateReplyEnteringLongPassiveMode(address string) FTPReply {
 	}
 }
 
+func CreateReplyEnteringExtendedPassiveMode(addr net.Addr) FTPReply {
+	tcpAddr, _ := net.ResolveTCPAddr("tcp", addr.String())
+	return FTPReply{
+		Code:    229,
+		Message: fmt.Sprintf("Entering Extended Passive Mode (|||%v|)", tcpAddr.Port),
+	}
+}
+
 func CreateReplyUserLoggedIn(message string) FTPReply {
 	if message == "" {
 		message = "User logged in, proceed"

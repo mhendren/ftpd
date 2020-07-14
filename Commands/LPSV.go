@@ -39,6 +39,10 @@ func (cmd LPSV) Execute(_ string) Replies.FTPReply {
 		return Replies.CreateReplyNotAvailableClosingConnection()
 	}
 
+	if cmd.cs.EPSVAll {
+		return Replies.CreateReplyBadCommandSequence()
+	}
+
 	cmd.cs.Type = Connection.TransferType(Connection.Passive)
 
 	if cmd.cs.DataConnected {
