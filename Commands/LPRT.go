@@ -44,23 +44,23 @@ func (af AddressFamily) String() string {
 	}
 }
 
-func getSegments(strings []string, expectedLength uint8) []uint8 {
-	length, err := strconv.ParseUint(strings[0], 10, 8)
-	if err != nil || uint8(length) != expectedLength || len(strings[1:]) != int(length) {
-		return nil
-	}
-	segments := make([]uint8, length)
-	for i, octet := range strings[1:] {
-		segment, err := strconv.ParseUint(octet, 10, 8)
-		if err != nil {
+func IPv6LPRTExecute(segments []string, cs *Connection.Status) Replies.FTPReply {
+	getSegments := func(strings []string, expectedLength uint8) []uint8 {
+		length, err := strconv.ParseUint(strings[0], 10, 8)
+		if err != nil || uint8(length) != expectedLength || len(strings[1:]) != int(length) {
 			return nil
 		}
-		segments[i] = uint8(segment)
+		segments := make([]uint8, length)
+		for i, octet := range strings[1:] {
+			segment, err := strconv.ParseUint(octet, 10, 8)
+			if err != nil {
+				return nil
+			}
+			segments[i] = uint8(segment)
+		}
+		return segments
 	}
-	return segments
-}
 
-func ExecuteIPv6(segments []string, cs *Connection.Status) Replies.FTPReply {
 	getIP6Addr := func(addressSegmentStrings []string) net.IP {
 		as := getSegments(addressSegmentStrings, 16)
 		if as == nil {
@@ -105,6 +105,9 @@ func ExecuteIPv6(segments []string, cs *Connection.Status) Replies.FTPReply {
 }
 
 func (cmd LPRT) Execute(args string) Replies.FTPReply {
+	if cmd.cs.EPSVAll {
+		return Replies.CreateReplyBadCommandSequence()
+	}
 	cmd.cs.Type = Connection.TransferType(Connection.Active)
 	segments := strings.Split(args, ",")
 	afCode, err := strconv.ParseUint(segments[0], 10, 8)
@@ -114,7 +117,7 @@ func (cmd LPRT) Execute(args string) Replies.FTPReply {
 	af := AddressFamily(afCode)
 	switch af {
 	case 6:
-		return ExecuteIPv6(segments[1:], cmd.cs)
+		return IPv6LPRTExecute(segments[1:], cmd.cs)
 	}
 	return Replies.CreateReplySupportedAddressFamilies([]int{6})
 }

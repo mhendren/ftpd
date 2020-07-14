@@ -67,8 +67,8 @@ func GetCommandMap(cs *Connection.Status, config Configuration.FTPConfig) map[st
 		"OPTS": NotImplemented{},
 
 		// RFC-2428 Command Set
-		"EPRT": NotImplemented{},
-		"EPSV": NotImplemented{},
+		"EPRT": EPRT{cs: cs},
+		"EPSV": EPSV{cs: cs},
 
 		// RFC-2640 Command Set
 		"LANG": NotImplemented{},
