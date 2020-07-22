@@ -99,7 +99,8 @@ func connectionHandle(connectionSocket net.Conn, config Configuration.FTPConfig)
 			},
 			Rand: rand.Reader,
 		},
-		ProtectedBSize: -1,
+		ProtectedBSize:    -1,
+		SecurityMechanism: Connection.SecurityTLS{},
 	}
 	connectionStatus = Connection.Status{
 		Connected:          false,

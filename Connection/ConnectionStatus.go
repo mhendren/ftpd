@@ -49,7 +49,7 @@ type Status struct {
 	TextProto          *textproto.Conn
 	StandardConnection net.Conn
 	DataConnected      bool
-	DataConnection     net.Conn
+	DataConnection     DataConnection
 	Remote             string
 	Authenticated      bool
 	Anonymous          bool
@@ -79,17 +79,13 @@ func (cs *Status) Disconnect() {
 	cs.Connected = false
 }
 
-func (cs *Status) DataConnect(conn net.Conn) {
+func (cs *Status) DataConnect() {
 	cs.DataConnected = true
-	cs.DataConnection = conn
 }
 
 func (cs *Status) DataDisconnect() {
-	if cs.DataConnection != nil {
-		cs.DataConnection.Close()
-	}
+	cs.DataConnection.Close()
 	cs.DataConnected = false
-	cs.DataConnection = nil
 }
 
 func (cs *Status) IsConnected() bool {

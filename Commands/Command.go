@@ -60,7 +60,7 @@ func GetCommandMap(cs *Connection.Status, config Configuration.FTPConfig) map[st
 		"ENC":  NotImplemented{},
 		"MIC":  NotImplemented{},
 		"PBSZ": PBSZ{cs: cs},
-		"PROT": NotImplemented{},
+		"PROT": PROT{cs: cs},
 
 		// RFC-2389 Command Set
 		"FEAT": NotImplemented{},

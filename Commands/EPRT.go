@@ -14,62 +14,46 @@ type EPRT struct {
 	cs *Connection.Status
 }
 
-type EPRTExecutor interface {
-	Execute() Replies.FTPReply
-}
-
-type IPv4EPRTExecutor struct {
-	cmd    EPRT
-	fields []string
-}
-
-type IPv6EPRTExecutor struct {
-	cmd    EPRT
-	fields []string
-}
-
-func (cmd EPRT) String() string {
-	return ""
-}
-
-func (executor IPv4EPRTExecutor) Execute() Replies.FTPReply {
-	address := executor.fields[1]
-	port := executor.fields[2]
-	destination := fmt.Sprintf("%v:%v", address, port)
-	localIP := strings.Split(executor.cmd.cs.CommandConnection.LocalAddr().String(), ":")
-	localPort, _ := strconv.Atoi(localIP[len(localIP)-1])
-	local, _ := net.ResolveTCPAddr("tcp4", fmt.Sprintf("%v:%v", localIP[0], (uint16)(localPort-1)))
-	remote, _ := net.ResolveTCPAddr("tcp4", destination)
-	conn, err := net.DialTCP("tcp4", local, remote)
-	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "error opening data connection: %v\n", err)
-		return Replies.CreateReplyCantOpenDataConnection()
-	}
-	executor.cmd.cs.DataConnect(conn)
-	return Replies.CreateReplyCommandOkay()
-}
-
-func (executor IPv6EPRTExecutor) Execute() Replies.FTPReply {
-	address := executor.fields[1]
-	port := executor.fields[2]
-
-	destinationSocket := fmt.Sprintf("[%v]:%v", address, port)
-	localIP := strings.Split(executor.cmd.cs.CommandConnection.LocalAddr().String(), ":")
-	localPort, _ := strconv.Atoi(localIP[len(localIP)-1])
-	localIPAddress := executor.cmd.cs.CommandConnection.LocalAddr().(*net.TCPAddr).IP
-	localSocket := fmt.Sprintf("[%v]:%v", localIPAddress, (uint16)(localPort-1))
-	local, _ := net.ResolveTCPAddr("tcp6", localSocket)
-	remote, _ := net.ResolveTCPAddr("tcp6", destinationSocket)
-	conn, err := net.DialTCP("tcp6", local, remote)
-	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "error opening data connection: %v\n", err)
-		return Replies.CreateReplyCantOpenDataConnection()
-	}
-	executor.cmd.cs.DataConnect(conn)
-	return Replies.CreateReplyCommandOkay()
-}
-
 func (cmd EPRT) Execute(args string) Replies.FTPReply {
+	TCPExecutor := func(fields []string, protocol string) Replies.FTPReply {
+		address := fields[1]
+		port := fields[2]
+
+		localIP := strings.Split(cmd.cs.CommandConnection.LocalAddr().String(), ":")
+		localPort, _ := strconv.Atoi(localIP[len(localIP)-1])
+		localIPAddress := cmd.cs.CommandConnection.LocalAddr().(*net.TCPAddr).IP
+
+		var remoteAddr string
+		var localAddr string
+
+		if protocol == "tcp6" {
+			remoteAddr = fmt.Sprintf("[%v]:%v", address, port)
+			localAddr = fmt.Sprintf("[%v]:%v", localIPAddress, (uint16)(localPort-1))
+		} else {
+			remoteAddr = fmt.Sprintf("%v:%v", address, port)
+			localAddr = fmt.Sprintf("%v:%v", localIPAddress, (uint16)(localPort-1))
+		}
+
+		dataConnection := Connection.DataConnection{
+			TransferType:    Connection.TransferType(Connection.Active),
+			Protocol:        protocol,
+			LocalAddress:    localAddr,
+			RemoteAddress:   remoteAddr,
+			Connection:      nil,
+			PassivePort:     0,
+			PassiveListener: nil,
+			Security:        cmd.cs.Security,
+			IsSetup:         false,
+		}
+		err := dataConnection.Setup()
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "error opening data connection: %v\n", err)
+			return Replies.CreateReplyCantOpenDataConnection()
+		}
+		cmd.cs.DataConnection = dataConnection
+		return Replies.CreateReplyCommandOkay()
+	}
+
 	if cmd.cs.EPSVAll {
 		return Replies.CreateReplyBadCommandSequence()
 	}
@@ -87,9 +71,9 @@ func (cmd EPRT) Execute(args string) Replies.FTPReply {
 	}
 	fields = fields[1:4]
 
-	executors := map[int]EPRTExecutor{
-		1: IPv4EPRTExecutor{cmd: cmd, fields: fields},
-		2: IPv6EPRTExecutor{cmd: cmd, fields: fields},
+	protocols := map[int]string{
+		1: "tcp4",
+		2: "tcp6",
 	}
 
 	netProtocol, err := strconv.Atoi(fields[0])
@@ -97,10 +81,10 @@ func (cmd EPRT) Execute(args string) Replies.FTPReply {
 		return Replies.CreateReplySyntaxErrorInParameters()
 	}
 
-	executor, found := executors[netProtocol]
+	protocol, found := protocols[netProtocol]
 	if !found {
 		outValues := ""
-		for k := range executors {
+		for k := range protocols {
 			if outValues != "" {
 				outValues += ", "
 			}
@@ -109,5 +93,5 @@ func (cmd EPRT) Execute(args string) Replies.FTPReply {
 		return Replies.CreateReplyUnsupportedExtendedPortProtocol(outValues)
 	}
 	cmd.cs.Type = Connection.TransferType(Connection.Active)
-	return executor.Execute()
+	return TCPExecutor(fields, protocol)
 }

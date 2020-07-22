@@ -81,24 +81,22 @@ func GetLongDirList(glob string, path string, abbreviated bool) ([]LONGDIR, erro
 }
 
 func (cmd LIST) Execute(args string) Replies.FTPReply {
-	if cmd.cs.DataConnected {
-		defer cmd.cs.DataDisconnect()
-	}
+	defer cmd.cs.DataDisconnect()
 	// by default assume LIST of current directory
 	fileInfo, err := GetLongDirList(args, cmd.cs.CurrentPath, cmd.abbreviated)
 	if err != nil {
-		cmd.cs.DataDisconnect()
-		Replies.CreateReplyClosingDataConnection()
+		return Replies.CreateReplyClosingDataConnection()
 	}
 	_, _ = fmt.Fprint(os.Stderr, "Data List\n")
-	if cmd.cs.DataConnected {
-		cmd.cs.SendFTPReply(Replies.CreateReplyDataConnectionOpen())
-	} else {
-		return Replies.CreateReplyRequestedFileActionNotAvailable()
+	err = cmd.cs.DataConnection.FinishSetup()
+	if err != nil {
+		return Replies.CreateReplyClosingDataConnection()
 	}
+	cmd.cs.DataConnect()
+	cmd.cs.SendFTPReply(Replies.CreateReplyFileStatusOkay())
 	for _, info := range fileInfo {
 		_, _ = fmt.Fprintf(os.Stderr, "file: %v\n", info)
-		_, err := fmt.Fprintf(cmd.cs.DataConnection, "%v\r\n", info)
+		_, err := cmd.cs.DataConnection.Send(info.String() + "\r\n")
 		if err != nil {
 			return Replies.CreateReplyConnectionClosedTransferAborted()
 		}

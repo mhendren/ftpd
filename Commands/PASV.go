@@ -4,7 +4,6 @@ import (
 	"FTPserver/Connection"
 	"FTPserver/Replies"
 	"fmt"
-	"net"
 	"os"
 	"strings"
 )
@@ -31,19 +30,21 @@ func (cmd PASV) Execute(_ string) Replies.FTPReply {
 		return Replies.CreateReplyBadCommandSequence()
 	}
 	localIP := strings.Split(cmd.cs.CommandConnection.LocalAddr().String(), ":")
-	listenSocket, err := net.Listen("tcp", fmt.Sprintf("%v:0", localIP[0]))
+	dataConnection := Connection.DataConnection{
+		TransferType:    Connection.TransferType(Connection.Passive),
+		Protocol:        "tcp",
+		LocalAddress:    fmt.Sprintf("%v:0", localIP[0]),
+		RemoteAddress:   "",
+		Connection:      nil,
+		PassivePort:     0,
+		PassiveListener: nil,
+		Security:        cmd.cs.Security,
+		IsSetup:         false,
+	}
+	err := dataConnection.Setup()
 	if err != nil {
 		return disconnect("Disconnecting (error creating PASV listening socket)", err)
 	}
-	localListenIP := strings.Split(listenSocket.Addr().String(), ":")
-	if len(localListenIP) < 2 {
-		return disconnect("Disconnecting, could not read port number for local socket", nil)
-	}
-	cmd.cs.SendFTPReply(Replies.CreateReplyEnteringPassiveMode(listenSocket.Addr()))
-	connectionSocket, err := listenSocket.Accept()
-	if err != nil {
-		return disconnect("Disconnecting (error getting local port number)", err)
-	}
-	cmd.cs.DataConnect(connectionSocket)
-	return Replies.CreateReplyNoAction()
+	cmd.cs.DataConnection = dataConnection
+	return Replies.CreateReplyEnteringPassiveMode(cmd.cs.DataConnection.PassiveListener.Addr())
 }
