@@ -24,4 +24,6 @@ type FTPConfig struct {
 	PasswordValidator   Validation.PasswordValidator
 	Umask               os.FileMode
 	IdleTimeout         int
+	AuthCertFile        string
+	AuthKeyFile         string
 }

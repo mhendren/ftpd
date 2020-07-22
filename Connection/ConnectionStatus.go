@@ -4,6 +4,7 @@ import (
 	"FTPserver/Replies"
 	"fmt"
 	"net"
+	"net/textproto"
 	"os"
 )
 
@@ -45,6 +46,8 @@ func (tm TransferMode) String() string {
 type Status struct {
 	Connected          bool
 	CommandConnection  net.Conn
+	TextProto          *textproto.Conn
+	StandardConnection net.Conn
 	DataConnected      bool
 	DataConnection     net.Conn
 	Remote             string
@@ -65,6 +68,7 @@ type Status struct {
 	IdleTimeout        int
 	PreferredEProtocol int
 	EPSVAll            bool
+	Security           Security
 }
 
 func (cs *Status) Connect() {
@@ -126,10 +130,11 @@ func (cs *Status) CanUseCommand(command string) bool {
 
 func (cs Status) SendFTPReply(reply Replies.FTPReply) {
 	if reply.Code < 0 {
-		_, _ = fmt.Fprintf(os.Stderr, "SendFTPReply: No action requested (communication handled by Command)")
+		_, _ = fmt.Fprintf(os.Stderr, "SendFTPReply: No action requested (communication handled by Command)\n")
 		return
 	}
-	_, err := fmt.Fprint(cs.CommandConnection, reply)
+	var err error
+	_, err = fmt.Fprintf(cs.CommandConnection, "%v", reply)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "SendFTPReply: %v\n", err)
 	}

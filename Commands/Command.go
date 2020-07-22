@@ -54,7 +54,7 @@ func GetCommandMap(cs *Connection.Status, config Configuration.FTPConfig) map[st
 
 		// RFC-2228 Command Set
 		"ADAT": NotImplemented{},
-		"AUTH": NotImplemented{},
+		"AUTH": AUTH{cs: cs},
 		"CCC":  NotImplemented{},
 		"CONF": NotImplemented{},
 		"ENC":  NotImplemented{},

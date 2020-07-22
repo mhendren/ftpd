@@ -17,7 +17,6 @@ func SetupConnection(ftpConfig Configuration.FTPConfig) net.Listener {
 }
 
 func Loop(ftpConfig Configuration.FTPConfig, listenSocket net.Listener) {
-
 	for {
 		connectionSocket, err := listenSocket.Accept()
 		if err != nil {

@@ -34,6 +34,8 @@ func main() {
 		AnonymousUsers:      []string{"anonymous", "ftp"},
 		Umask:               os.FileMode(0022),
 		IdleTimeout:         60,
+		AuthCertFile:        "sample-cert.pem",
+		AuthKeyFile:         "sample-key.pem",
 	}
 	ftpConfig.PasswordValidator = Implemntation.AnonymousOnlyValidator{
 		AllowAnonymous: true,

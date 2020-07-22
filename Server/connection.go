@@ -5,6 +5,8 @@ import (
 	"FTPserver/Configuration"
 	"FTPserver/Connection"
 	"FTPserver/Replies"
+	"crypto/rand"
+	"crypto/tls"
 	"fmt"
 	"net"
 	"net/textproto"
@@ -47,10 +49,10 @@ func splitData(dataLine string) (string, string) {
 }
 
 func commandLoop(connectionSocket net.Conn, config Configuration.FTPConfig) {
-	tp := textproto.NewConn(connectionSocket)
+	connectionStatus.TextProto = textproto.NewConn(connectionSocket)
 
 	for connectionStatus.IsConnected() {
-		line, err := tp.ReadLine()
+		line, err := connectionStatus.TextProto.ReadLine()
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "error: %v\n", err)
 			break
@@ -76,9 +78,31 @@ func commandLoop(connectionSocket net.Conn, config Configuration.FTPConfig) {
 
 func connectionHandle(connectionSocket net.Conn, config Configuration.FTPConfig) {
 	defer connectionSocket.Close()
+	cert, err := tls.LoadX509KeyPair(config.AuthCertFile, config.AuthKeyFile)
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "Certificate error: %v", err)
+	}
+	security := Connection.Security{
+		IsSecure:    false,
+		Certificate: cert,
+		CertFile:    config.AuthCertFile,
+		KeyFile:     config.AuthKeyFile,
+		Config: &tls.Config{
+			Certificates:             []tls.Certificate{cert},
+			MinVersion:               tls.VersionTLS12,
+			PreferServerCipherSuites: true,
+			CipherSuites: []uint16{
+				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+				tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_RSA_WITH_AES_256_CBC_SHA,
+			},
+			Rand: rand.Reader,
+		},
+	}
 	connectionStatus = Connection.Status{
 		Connected:          false,
-		CommandConnection:  connectionSocket,
+		StandardConnection: connectionSocket,
 		Remote:             connectionSocket.RemoteAddr().String(),
 		Authenticated:      false,
 		Anonymous:          false,
@@ -93,7 +117,9 @@ func connectionHandle(connectionSocket net.Conn, config Configuration.FTPConfig)
 		IdleTimeout:        config.IdleTimeout,
 		PreferredEProtocol: 0,
 		EPSVAll:            false,
+		Security:           security,
 	}
+	connectionStatus.CommandConnection = connectionStatus.StandardConnection
 	connectionStatus.Connect()
 	connectionLog(connectionSocket)
 	connectionPreamble(connectionSocket, config)
