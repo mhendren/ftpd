@@ -22,7 +22,7 @@ func (cmd USER) Execute(args string) Replies.FTPReply {
 	}
 	cmd.cs.SetAnonymous(strings.ToLower(args) == "anonymous")
 	cmd.cs.SetUser(args)
-	_, _ = fmt.Fprintf(os.Stderr, "User connecting as %v", args)
+	_, _ = fmt.Fprintf(os.Stderr, "User connecting as %v\n", args)
 	if !cmd.config.RequiresPassword {
 		if cmd.config.RequiresAccount {
 			cmd.cs.SetCommands(map[string]bool{"ACCT": true})

@@ -190,6 +190,27 @@ func CreateReplyUserLoggedIn(message string) FTPReply {
 	}
 }
 
+func CreateReplyUserLoggedInBySecurityExchange() FTPReply {
+	return FTPReply{
+		Code:    232,
+		Message: "User logged in, authorized by security data exchange",
+	}
+}
+
+func CreateReplySecurityDataExchangeComplete() FTPReply {
+	return FTPReply{
+		Code:    234,
+		Message: "Security data exchange complete",
+	}
+}
+
+func CreateReplySecurityDataExchangeCompleteWithData(data string) FTPReply {
+	return FTPReply{
+		Code:    235,
+		Message: data,
+	}
+}
+
 func CreateReplyFileActionCompleted(filename string) FTPReply {
 	return FTPReply{
 		Code:    250,
@@ -224,6 +245,27 @@ func CreateReplyNeedAccount() FTPReply {
 	}
 }
 
+func CreateReplySecurityOkay(data string) FTPReply {
+	return FTPReply{
+		Code:    334,
+		Message: data,
+	}
+}
+
+func CreateReplySecurityAcceptable(data string) FTPReply {
+	return FTPReply{
+		Code:    335,
+		Message: data,
+	}
+}
+
+func CreateReplyNeedPasswordWithChallenge(challenge string) FTPReply {
+	return FTPReply{
+		Code:    336,
+		Message: fmt.Sprintf("Username okay, need password. Challenge is \"%v\"", challenge),
+	}
+}
+
 func CreateReplyPendingFurtherInformation() FTPReply {
 	return FTPReply{
 		Code:    350,
@@ -249,6 +291,13 @@ func CreateReplyConnectionClosedTransferAborted() FTPReply {
 	return FTPReply{
 		Code:    426,
 		Message: "Connection closed; transfer aborted",
+	}
+}
+
+func CreateReplySecurityResourceUnavailable() FTPReply {
+	return FTPReply{
+		Code:    431,
+		Message: "Need some unavailable resource to process security",
 	}
 }
 
@@ -342,6 +391,41 @@ func CreateReplyNeedAccountForStoring() FTPReply {
 	return FTPReply{
 		Code:    532,
 		Message: "Need account for storing files",
+	}
+}
+
+func CreateReplyCommandProtectionDenniedPolicy() FTPReply {
+	return FTPReply{
+		Code:    533,
+		Message: "Command protection level denied for policy reasons",
+	}
+}
+
+func CreateReplyRequestDeniedForPolicyReasons() FTPReply {
+	return FTPReply{
+		Code:    534,
+		Message: "Request denied for policy reasons",
+	}
+}
+
+func CreateReplyFailedSecurityCheck() FTPReply {
+	return FTPReply{
+		Code:    535,
+		Message: "Failed security check (hash, sequence, etc)",
+	}
+}
+
+func CreateReplyRequestedPROTNotSupported() FTPReply {
+	return FTPReply{
+		Code:    536,
+		Message: "Requested PROT level not supported by mechanism",
+	}
+}
+
+func CreateReplyCommandProtectionNotSupported() FTPReply {
+	return FTPReply{
+		Code:    537,
+		Message: "Command protection level not supported by security mechanism",
 	}
 }
 
