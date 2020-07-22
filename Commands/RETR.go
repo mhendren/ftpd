@@ -3,7 +3,6 @@ package Commands
 import (
 	"FTPserver/Connection"
 	"FTPserver/Replies"
-	"io"
 	"os"
 	"path/filepath"
 )
@@ -13,9 +12,7 @@ type RETR struct {
 }
 
 func (cmd RETR) Execute(args string) Replies.FTPReply {
-	if cmd.cs.DataConnected {
-		defer cmd.cs.DataDisconnect()
-	}
+	defer cmd.cs.DataDisconnect()
 
 	if args == "" {
 		return Replies.CreateReplySyntaxErrorInParameters()
@@ -29,13 +26,14 @@ func (cmd RETR) Execute(args string) Replies.FTPReply {
 		_ = f.Close()
 	}(file)
 
-	if cmd.cs.DataConnected {
-		cmd.cs.SendFTPReply(Replies.CreateReplyDataConnectionOpen())
-	} else {
-		return Replies.CreateReplyRequestedFileActionNotAvailable()
+	err = cmd.cs.DataConnection.FinishSetup()
+	if err != nil {
+		return Replies.CreateReplyClosingDataConnection()
 	}
+	cmd.cs.DataConnect()
+	cmd.cs.SendFTPReply(Replies.CreateReplyFileStatusOkay())
 
-	_, err = io.Copy(cmd.cs.DataConnection, file)
+	_, err = cmd.cs.DataConnection.CopyOut(file)
 	cmd.cs.DataDisconnect()
 	if err != nil {
 		return Replies.CreateReplyConnectionClosedTransferAborted()

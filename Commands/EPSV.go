@@ -59,17 +59,21 @@ func (cmd EPSV) Execute(args string) Replies.FTPReply {
 	if cmd.cs.PreferredEProtocol != 0 {
 		lAddr = ":0"
 	}
-
-	listenSocket, err := net.Listen("tcp", lAddr)
-	if err != nil {
-		return disconnect("Disconnecting (error creating EPSV listening socket)", err)
+	dataConnection := Connection.DataConnection{
+		TransferType:    Connection.TransferType(Connection.Passive),
+		Protocol:        "tcp",
+		LocalAddress:    lAddr,
+		RemoteAddress:   "",
+		Connection:      nil,
+		PassivePort:     0,
+		PassiveListener: nil,
+		Security:        cmd.cs.Security,
+		IsSetup:         false,
 	}
-
-	cmd.cs.SendFTPReply(Replies.CreateReplyEnteringExtendedPassiveMode(listenSocket.Addr()))
-	connectionSocket, err := listenSocket.Accept()
+	err = dataConnection.Setup()
 	if err != nil {
-		return disconnect("Disconnecting (error getting local port number)", err)
+		return disconnect("Disconnecting (error creating PASV listening socket)", err)
 	}
-	cmd.cs.DataConnect(connectionSocket)
-	return Replies.CreateReplyNoAction()
+	cmd.cs.DataConnection = dataConnection
+	return Replies.CreateReplyEnteringExtendedPassiveMode(cmd.cs.DataConnection.PassiveListener.Addr())
 }

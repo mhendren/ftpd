@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -17,16 +16,14 @@ type LPSV struct {
 }
 
 func (cmd LPSV) String() string {
-	localIP := cmd.localListener.Addr().(*net.TCPAddr).IP
-	localSegments := strings.Split(cmd.localListener.Addr().String(), ":")
-	localPort, _ := strconv.Atoi(localSegments[len(localSegments)-1])
+	localIP := cmd.cs.DataConnection.PassiveListener.Addr().(*net.TCPAddr).IP
 	outString := "6,16,"
 	for _, val := range localIP {
 		outString += fmt.Sprintf("%v,", val)
 	}
 	outString += "2,"
 	netPort := make([]byte, 2)
-	binary.BigEndian.PutUint16(netPort, uint16(localPort))
+	binary.BigEndian.PutUint16(netPort, uint16(cmd.cs.DataConnection.PassivePort))
 	outString += fmt.Sprintf("%v,%v", netPort[0], netPort[1])
 	return outString
 }
@@ -48,21 +45,22 @@ func (cmd LPSV) Execute(_ string) Replies.FTPReply {
 	if cmd.cs.DataConnected {
 		return Replies.CreateReplyBadCommandSequence()
 	}
-	localIP := strings.Split(cmd.cs.CommandConnection.LocalAddr().String(), "]:")
-	listenSocket, err := net.Listen("tcp6", fmt.Sprintf("%v]:0", localIP[0]))
+	localAddr := strings.Split(cmd.cs.CommandConnection.LocalAddr().String(), "]:")
+	dataConnection := Connection.DataConnection{
+		TransferType:    Connection.TransferType(Connection.Passive),
+		Protocol:        "tcp",
+		LocalAddress:    localAddr[0] + "]:0",
+		RemoteAddress:   "",
+		Connection:      nil,
+		PassivePort:     0,
+		PassiveListener: nil,
+		Security:        cmd.cs.Security,
+		IsSetup:         false,
+	}
+	err := dataConnection.Setup()
 	if err != nil {
 		return disconnect("Disconnecting (error creating PASV listening socket)", err)
 	}
-	localListenIP := strings.Split(listenSocket.Addr().String(), "]:")
-	if len(localListenIP) < 2 {
-		return disconnect("Disconnecting, could not read port number for local socket", nil)
-	}
-	cmd.localListener = listenSocket
-	cmd.cs.SendFTPReply(Replies.CreateReplyEnteringLongPassiveMode(cmd.String()))
-	connectionSocket, err := listenSocket.Accept()
-	if err != nil {
-		return disconnect("Disconnecting (error getting local port number)", err)
-	}
-	cmd.cs.DataConnect(connectionSocket)
-	return Replies.CreateReplyNoAction()
+	cmd.cs.DataConnection = dataConnection
+	return Replies.CreateReplyEnteringLongPassiveMode(cmd.String())
 }

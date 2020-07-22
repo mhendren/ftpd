@@ -6,6 +6,15 @@ import (
 	"net/textproto"
 )
 
+type DataChannelProtectionLevel int
+
+const (
+	Clear int = iota
+	Safe
+	Confidential
+	Private
+)
+
 type Security struct {
 	IsSecure          bool
 	CommandConnection net.Conn
@@ -15,4 +24,6 @@ type Security struct {
 	CertFile          string
 	KeyFile           string
 	ProtectedBSize    int
+	ProtectionLevel   DataChannelProtectionLevel
+	SecurityMechanism SecurityMechanism
 }

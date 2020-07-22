@@ -4,7 +4,6 @@ import (
 	"FTPserver/Connection"
 	"FTPserver/Replies"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -17,9 +16,7 @@ type STOR struct {
 }
 
 func (cmd STOR) Execute(args string) Replies.FTPReply {
-	if cmd.cs.DataConnected {
-		defer cmd.cs.DataDisconnect()
-	}
+	defer cmd.cs.DataDisconnect()
 	var file *os.File
 	var err error
 	if cmd.isUnique {
@@ -44,13 +41,13 @@ func (cmd STOR) Execute(args string) Replies.FTPReply {
 		_ = f.Close()
 	}(file)
 
-	if cmd.cs.DataConnected {
-		cmd.cs.SendFTPReply(Replies.CreateReplyDataConnectionOpen())
-	} else {
-		// Data connection actually needs to be open already, or I don't know where to send data
-		return Replies.CreateReplyRequestedFileActionNotAvailable()
+	err = cmd.cs.DataConnection.FinishSetup()
+	if err != nil {
+		return Replies.CreateReplyClosingDataConnection()
 	}
-	_, err = io.Copy(file, cmd.cs.DataConnection)
+	cmd.cs.DataConnect()
+	cmd.cs.SendFTPReply(Replies.CreateReplyFileStatusOkay())
+	_, err = cmd.cs.DataConnection.CopyIn(file)
 	if err != nil {
 		return Replies.CreateReplyConnectionClosedTransferAborted()
 	}
