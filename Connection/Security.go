@@ -14,4 +14,5 @@ type Security struct {
 	Config            *tls.Config
 	CertFile          string
 	KeyFile           string
+	ProtectedBSize    int
 }
