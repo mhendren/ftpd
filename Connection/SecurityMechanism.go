@@ -9,4 +9,8 @@ type SecurityMechanism interface {
 	MIC(args []byte) Replies.FTPReply
 	ENC(args []byte) Replies.FTPReply
 	CONF(args []byte) Replies.FTPReply
+	DiscloseADAT() bool
+	DiscloseMIC() bool
+	DiscloseCONF() bool
+	DiscloseENC() bool
 }

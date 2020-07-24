@@ -1,6 +1,7 @@
 package Commands
 
 import (
+	"FTPserver/Configuration"
 	"FTPserver/Connection"
 	"FTPserver/Replies"
 	"fmt"
@@ -80,4 +81,12 @@ func (cmd EPSV) Execute(args string) Replies.FTPReply {
 
 func (cmd EPSV) Name() string {
 	return "EPSV"
+}
+
+func (cmd EPSV) IsExtendedCommand(_ *Connection.Status, _ Configuration.FTPConfig) bool {
+	return true
+}
+
+func (cmd EPSV) AcceptedArguments(_ *Connection.Status, _ Configuration.FTPConfig) []string {
+	return nil
 }

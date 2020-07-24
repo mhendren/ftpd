@@ -1,6 +1,7 @@
 package Commands
 
 import (
+	"FTPserver/Configuration"
 	"FTPserver/Connection"
 	"FTPserver/Replies"
 	"encoding/base64"
@@ -23,4 +24,12 @@ func (cmd ADAT) Execute(args string) Replies.FTPReply {
 
 func (cmd ADAT) Name() string {
 	return "ADAT"
+}
+
+func (cmd ADAT) IsExtendedCommand(cs *Connection.Status, _ Configuration.FTPConfig) bool {
+	return cs.Security.SecurityMechanism.DiscloseADAT()
+}
+
+func (cmd ADAT) AcceptedArguments(_ *Connection.Status, _ Configuration.FTPConfig) []string {
+	return nil
 }

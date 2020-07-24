@@ -1,6 +1,7 @@
 package Commands
 
 import (
+	"FTPserver/Configuration"
 	"FTPserver/Connection"
 	"FTPserver/Replies"
 	"math"
@@ -30,4 +31,12 @@ func (cmd PBSZ) Execute(args string) Replies.FTPReply {
 
 func (cmd PBSZ) Name() string {
 	return "PBSZ"
+}
+
+func (cmd PBSZ) IsExtendedCommand(_ *Connection.Status, _ Configuration.FTPConfig) bool {
+	return true
+}
+
+func (cmd PBSZ) AcceptedArguments(_ *Connection.Status, _ Configuration.FTPConfig) []string {
+	return nil
 }

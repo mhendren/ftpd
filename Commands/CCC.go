@@ -1,6 +1,7 @@
 package Commands
 
 import (
+	"FTPserver/Configuration"
 	"FTPserver/Connection"
 	"FTPserver/Replies"
 )
@@ -52,4 +53,12 @@ func (cmd CCC) Execute(_ string) Replies.FTPReply {
 
 func (cmd CCC) Name() string {
 	return "CCC"
+}
+
+func (cmd CCC) IsExtendedCommand(cs *Connection.Status, _ Configuration.FTPConfig) bool {
+	return cs.Security.CCCStatus == Connection.CCCStatus(Connection.Allow)
+}
+
+func (cmd CCC) AcceptedArguments(_ *Connection.Status, _ Configuration.FTPConfig) []string {
+	return nil
 }

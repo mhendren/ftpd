@@ -32,3 +32,18 @@ func (sm SecurityTLS) CONF(_ []byte) Replies.FTPReply {
 func (sm SecurityTLS) ENC(_ []byte) Replies.FTPReply {
 	return Replies.CreateReplyCommandProtectionNotSupported()
 }
+
+func (sm SecurityTLS) DiscloseADAT() bool {
+	return false
+}
+
+func (sm SecurityTLS) DiscloseMIC() bool {
+	return false
+}
+
+func (sm SecurityTLS) DiscloseCONF() bool {
+	return false
+}
+func (sm SecurityTLS) DiscloseENC() bool {
+	return false
+}

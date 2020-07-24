@@ -1,6 +1,7 @@
 package Commands
 
 import (
+	"FTPserver/Configuration"
 	"FTPserver/Connection"
 	"FTPserver/Replies"
 	"encoding/binary"
@@ -67,4 +68,12 @@ func (cmd LPSV) Execute(_ string) Replies.FTPReply {
 
 func (cmd LPSV) Name() string {
 	return "LPSV"
+}
+
+func (cmd LPSV) IsExtendedCommand(_ *Connection.Status, _ Configuration.FTPConfig) bool {
+	return true
+}
+
+func (cmd LPSV) AcceptedArguments(_ *Connection.Status, _ Configuration.FTPConfig) []string {
+	return nil
 }

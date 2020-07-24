@@ -1,6 +1,7 @@
 package Commands
 
 import (
+	"FTPserver/Configuration"
 	"FTPserver/Connection"
 	"FTPserver/Replies"
 )
@@ -45,4 +46,12 @@ func (cmd PROT) Execute(args string) Replies.FTPReply {
 
 func (cmd PROT) Name() string {
 	return "PROT"
+}
+
+func (cmd PROT) IsExtendedCommand(_ *Connection.Status, _ Configuration.FTPConfig) bool {
+	return true
+}
+
+func (cmd PROT) AcceptedArguments(_ *Connection.Status, _ Configuration.FTPConfig) []string {
+	return nil
 }

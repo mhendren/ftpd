@@ -1,6 +1,7 @@
 package Commands
 
 import (
+	"FTPserver/Configuration"
 	"FTPserver/Connection"
 	"FTPserver/Replies"
 	"encoding/base64"
@@ -23,4 +24,12 @@ func (cmd MIC) Execute(args string) Replies.FTPReply {
 
 func (cmd MIC) Name() string {
 	return "MIC"
+}
+
+func (cmd MIC) IsExtendedCommand(cs *Connection.Status, _ Configuration.FTPConfig) bool {
+	return cs.Security.SecurityMechanism.DiscloseMIC()
+}
+
+func (cmd MIC) AcceptedArguments(_ *Connection.Status, _ Configuration.FTPConfig) []string {
+	return nil
 }
