@@ -1,6 +1,7 @@
 package Commands
 
 import (
+	"FTPserver/Configuration"
 	"FTPserver/Connection"
 	"FTPserver/Replies"
 	"encoding/base64"
@@ -23,4 +24,12 @@ func (cmd ENC) Execute(args string) Replies.FTPReply {
 
 func (cmd ENC) Name() string {
 	return "ENC"
+}
+
+func (cmd ENC) IsExtendedCommand(cs *Connection.Status, _ Configuration.FTPConfig) bool {
+	return cs.Security.SecurityMechanism.DiscloseENC()
+}
+
+func (cmd ENC) AcceptedArguments(_ *Connection.Status, _ Configuration.FTPConfig) []string {
+	return nil
 }

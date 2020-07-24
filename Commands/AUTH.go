@@ -1,6 +1,7 @@
 package Commands
 
 import (
+	"FTPserver/Configuration"
 	"FTPserver/Connection"
 	"FTPserver/Replies"
 	"crypto/tls"
@@ -51,4 +52,14 @@ func (cmd AUTH) Execute(args string) Replies.FTPReply {
 
 func (cmd AUTH) Name() string {
 	return "AUTH"
+}
+
+func (cmd AUTH) IsExtendedCommand(_ *Connection.Status, _ Configuration.FTPConfig) bool {
+	return true
+}
+
+func (cmd AUTH) AcceptedArguments(_ *Connection.Status, _ Configuration.FTPConfig) []string {
+	return []string{
+		"TLS",
+	}
 }
