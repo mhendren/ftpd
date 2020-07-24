@@ -54,12 +54,12 @@ func GetCommandMap(cs *Connection.Status, config Configuration.FTPConfig) map[st
 		"LPSV": LPSV{cs: cs},
 
 		// RFC-2228 Command Set
-		"ADAT": NotImplemented{},
+		"ADAT": ADAT{cs: cs},
 		"AUTH": AUTH{cs: cs},
 		"CCC":  CCC{cs: cs},
-		"CONF": NotImplemented{},
-		"ENC":  NotImplemented{},
-		"MIC":  NotImplemented{},
+		"CONF": CONF{cs: cs},
+		"ENC":  ENC{cs: cs},
+		"MIC":  MIC{cs: cs},
 		"PBSZ": PBSZ{cs: cs},
 		"PROT": PROT{cs: cs},
 
