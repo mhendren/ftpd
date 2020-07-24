@@ -8,6 +8,7 @@ import (
 
 type FTPCommand interface {
 	Execute(args string) Replies.FTPReply
+	Name() string
 }
 
 func GetCommandMap(cs *Connection.Status, config Configuration.FTPConfig) map[string]FTPCommand {
@@ -55,7 +56,7 @@ func GetCommandMap(cs *Connection.Status, config Configuration.FTPConfig) map[st
 		// RFC-2228 Command Set
 		"ADAT": NotImplemented{},
 		"AUTH": AUTH{cs: cs},
-		"CCC":  NotImplemented{},
+		"CCC":  CCC{cs: cs},
 		"CONF": NotImplemented{},
 		"ENC":  NotImplemented{},
 		"MIC":  NotImplemented{},

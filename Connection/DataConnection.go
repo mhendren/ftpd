@@ -74,7 +74,7 @@ func (dc *DataConnection) FinishSetup() error {
 		if err != nil {
 			return err
 		}
-		if dc.Security.IsSecure {
+		if dc.Security.ProtectionLevel == DataChannelProtectionLevel(Private) {
 			dc.Connection = tls.Server(connection, dc.Security.Config)
 		} else {
 			dc.Connection = connection
@@ -91,7 +91,7 @@ func (dc *DataConnection) FinishSetup() error {
 		if err != nil {
 			return err
 		}
-		if dc.Security.IsSecure && dc.Security.ProtectionLevel == DataChannelProtectionLevel(Private) {
+		if dc.Security.ProtectionLevel == DataChannelProtectionLevel(Private) {
 			dc.Connection = tls.Server(connection, dc.Security.Config)
 		} else {
 			dc.Connection = connection

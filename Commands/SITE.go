@@ -25,3 +25,7 @@ func (cmd SITE) Execute(argString string) Replies.FTPReply {
 	}
 	return siteCommand.Execute(argString)
 }
+
+func (cmd SITE) Name() string {
+	return "SITE"
+}

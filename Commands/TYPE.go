@@ -50,3 +50,7 @@ func (cmd TYPE) Execute(args string) Replies.FTPReply {
 	}
 	return Replies.CreateReplySyntaxErrorInParameters()
 }
+
+func (cmd TYPE) Name() string {
+	return "TYPE"
+}

@@ -13,7 +13,7 @@ type PBSZ struct {
 
 func (cmd PBSZ) Execute(args string) Replies.FTPReply {
 	// only TLS, a streaming system, is supported so only size 0 will work
-	if !cmd.cs.Security.IsSecure {
+	if !cmd.cs.Security.SecureCommandChannel {
 		return Replies.CreateReplyBadCommandSequence()
 	}
 	size, err := strconv.Atoi(args)
@@ -26,4 +26,8 @@ func (cmd PBSZ) Execute(args string) Replies.FTPReply {
 		reply.Message = "PBSZ=0"
 	}
 	return reply
+}
+
+func (cmd PBSZ) Name() string {
+	return "PBSZ"
 }

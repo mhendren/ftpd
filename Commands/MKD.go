@@ -22,3 +22,7 @@ func (cmd MKD) Execute(args string) Replies.FTPReply {
 	}
 	return Replies.CreateReplyPathnameCreated(fullPath, true)
 }
+
+func (cmd MKD) Name() string {
+	return "MKD"
+}

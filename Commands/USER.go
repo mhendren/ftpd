@@ -33,3 +33,7 @@ func (cmd USER) Execute(args string) Replies.FTPReply {
 	cmd.cs.SetCommands(map[string]bool{"PASS": true})
 	return Replies.CreateReplyNeedPassword()
 }
+
+func (cmd USER) Name() string {
+	return "USER"
+}

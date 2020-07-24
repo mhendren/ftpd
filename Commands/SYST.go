@@ -16,3 +16,7 @@ func (cmd SYST) Execute(_ string) Replies.FTPReply {
 	}
 	return Replies.CreateReplyNameSystemType(system)
 }
+
+func (cmd SYST) Name() string {
+	return "SYST"
+}

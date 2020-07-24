@@ -36,6 +36,7 @@ func main() {
 		IdleTimeout:         60,
 		AuthCertFile:        "sample-cert.pem",
 		AuthKeyFile:         "sample-key.pem",
+		CCCStatus:           Connection.CCCStatus(Connection.Forbid),
 	}
 	ftpConfig.PasswordValidator = Implemntation.AnonymousOnlyValidator{
 		AllowAnonymous: true,

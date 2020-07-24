@@ -57,3 +57,7 @@ func (cmd STOR) Execute(args string) Replies.FTPReply {
 	}
 	return Replies.CreateReplyClosingDataConnection()
 }
+
+func (cmd STOR) Name() string {
+	return "STOR"
+}

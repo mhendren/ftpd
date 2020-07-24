@@ -19,7 +19,7 @@ func (cmd AUTH) Execute(args string) Replies.FTPReply {
 			return Replies.CreateReplyFailedSecurityCheck()
 		}
 		cmd.cs.SendFTPReply(Replies.CreateReplySecurityDataExchangeComplete())
-		cmd.cs.Security.IsSecure = true
+		cmd.cs.Security.SecureCommandChannel = true
 		cmd.cs.Security.CommandConnection = authConn
 		cmd.cs.CommandConnection = cmd.cs.Security.CommandConnection
 		cmd.cs.Security.TextProto = textproto.NewConn(cmd.cs.CommandConnection)
@@ -47,4 +47,8 @@ func (cmd AUTH) Execute(args string) Replies.FTPReply {
 		fn = AuthUnknownExecute
 	}
 	return fn()
+}
+
+func (cmd AUTH) Name() string {
+	return "AUTH"
 }

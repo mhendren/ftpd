@@ -12,3 +12,7 @@ type PWD struct {
 func (cmd PWD) Execute(_ string) Replies.FTPReply {
 	return Replies.CreateReplyPathnameCreated(cmd.cs.CurrentPath, false)
 }
+
+func (cmd PWD) Name() string {
+	return "PWD"
+}

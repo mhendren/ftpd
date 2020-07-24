@@ -37,3 +37,7 @@ func (cmd MODE) Execute(args string) Replies.FTPReply {
 	}
 	return Replies.CreateReplyCommandNotImplementedForParameter()
 }
+
+func (cmd MODE) Name() string {
+	return "MODE"
+}

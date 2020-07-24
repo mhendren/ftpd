@@ -50,3 +50,7 @@ func (cmd PASS) Execute(args string) Replies.FTPReply {
 	}
 	return Replies.CreateReplyNotLoggedIn()
 }
+
+func (cmd PASS) Name() string {
+	return "PASS"
+}

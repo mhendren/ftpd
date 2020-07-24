@@ -26,3 +26,7 @@ func (cmd DELE) Execute(args string) Replies.FTPReply {
 	}
 	return Replies.CreateReplyCommandOkay()
 }
+
+func (cmd DELE) Name() string {
+	return "DELE"
+}

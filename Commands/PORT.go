@@ -56,3 +56,7 @@ func (cmd PORT) Execute(args string) Replies.FTPReply {
 	cmd.cs.DataConnection = dataConnection
 	return Replies.CreateReplyCommandOkay()
 }
+
+func (cmd PORT) Name() string {
+	return "PORT"
+}

@@ -43,3 +43,7 @@ func (cmd ACCT) Execute(args string) Replies.FTPReply {
 	}
 	return Replies.CreateReplyNeedAccount()
 }
+
+func (cmd ACCT) Name() string {
+	return "ACCT"
+}
