@@ -26,4 +26,5 @@ type FTPConfig struct {
 	IdleTimeout         int
 	AuthCertFile        string
 	AuthKeyFile         string
+	CCCStatus           Connection.CCCStatus
 }

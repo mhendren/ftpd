@@ -56,3 +56,7 @@ func (cmd STAT) Execute(args string) Replies.FTPReply {
 	}
 	return ExecuteSystem(cmd.cs, cmd.config)
 }
+
+func (cmd STAT) Name() string {
+	return "STAT"
+}

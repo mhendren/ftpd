@@ -22,3 +22,7 @@ func (cmd RMD) Execute(args string) Replies.FTPReply {
 	}
 	return Replies.CreateReplyCommandOkay()
 }
+
+func (cmd RMD) Name() string {
+	return "RMD"
+}

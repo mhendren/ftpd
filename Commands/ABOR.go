@@ -15,3 +15,7 @@ func (cmd ABOR) Execute(_ string) Replies.FTPReply {
 	}
 	return Replies.CreateReplyClosingDataConnection()
 }
+
+func (cmd ABOR) Name() string {
+	return "ABOR"
+}

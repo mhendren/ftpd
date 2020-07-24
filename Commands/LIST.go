@@ -103,3 +103,7 @@ func (cmd LIST) Execute(args string) Replies.FTPReply {
 	}
 	return Replies.CreateReplyClosingDataConnection()
 }
+
+func (cmd LIST) Name() string {
+	return "LIST"
+}

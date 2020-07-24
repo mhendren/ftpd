@@ -64,3 +64,7 @@ func (cmd LPSV) Execute(_ string) Replies.FTPReply {
 	cmd.cs.DataConnection = dataConnection
 	return Replies.CreateReplyEnteringLongPassiveMode(cmd.String())
 }
+
+func (cmd LPSV) Name() string {
+	return "LPSV"
+}

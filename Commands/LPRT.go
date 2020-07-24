@@ -131,3 +131,7 @@ func (cmd LPRT) Execute(args string) Replies.FTPReply {
 	}
 	return Replies.CreateReplySupportedAddressFamilies([]int{6})
 }
+
+func (cmd LPRT) Name() string {
+	return "LPRT"
+}

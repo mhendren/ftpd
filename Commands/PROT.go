@@ -10,6 +10,9 @@ type PROT struct {
 }
 
 func (cmd PROT) Execute(args string) Replies.FTPReply {
+	if cmd.cs.LastCommand != "PBSZ" || !cmd.cs.Security.SecureCommandChannel {
+		return Replies.CreateReplyBadCommandSequence()
+	}
 	var dataLevelProtection Connection.DataChannelProtectionLevel
 	switch args {
 	case "C":
@@ -38,4 +41,8 @@ func (cmd PROT) Execute(args string) Replies.FTPReply {
 	}
 	cmd.cs.Security.ProtectionLevel = dataLevelProtection
 	return Replies.CreateReplyCommandOkay()
+}
+
+func (cmd PROT) Name() string {
+	return "PROT"
 }

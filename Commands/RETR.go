@@ -40,3 +40,7 @@ func (cmd RETR) Execute(args string) Replies.FTPReply {
 	}
 	return Replies.CreateReplyClosingDataConnection()
 }
+
+func (cmd RETR) Name() string {
+	return "RETR"
+}

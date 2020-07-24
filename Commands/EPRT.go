@@ -95,3 +95,7 @@ func (cmd EPRT) Execute(args string) Replies.FTPReply {
 	cmd.cs.Type = Connection.TransferType(Connection.Active)
 	return TCPExecutor(fields, protocol)
 }
+
+func (cmd EPRT) Name() string {
+	return "EPRT"
+}

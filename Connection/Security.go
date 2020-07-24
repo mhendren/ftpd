@@ -2,7 +2,6 @@ package Connection
 
 import (
 	"crypto/tls"
-	"net"
 	"net/textproto"
 )
 
@@ -15,15 +14,23 @@ const (
 	Private
 )
 
+type CCCStatus int
+
+const (
+	Forbid = iota
+	Allow
+)
+
 type Security struct {
-	IsSecure          bool
-	CommandConnection net.Conn
-	TextProto         *textproto.Conn
-	Certificate       tls.Certificate
-	Config            *tls.Config
-	CertFile          string
-	KeyFile           string
-	ProtectedBSize    int
-	ProtectionLevel   DataChannelProtectionLevel
-	SecurityMechanism SecurityMechanism
+	SecureCommandChannel bool
+	CommandConnection    *tls.Conn
+	TextProto            *textproto.Conn
+	Certificate          tls.Certificate
+	Config               *tls.Config
+	CertFile             string
+	KeyFile              string
+	ProtectedBSize       int
+	ProtectionLevel      DataChannelProtectionLevel
+	SecurityMechanism    SecurityMechanism
+	CCCStatus            CCCStatus
 }

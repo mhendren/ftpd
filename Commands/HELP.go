@@ -49,3 +49,7 @@ func (cmd HELP) Execute(_ string) Replies.FTPReply {
 	outStr += "\nEnd of HELP"
 	return Replies.CreateReplyHelpMessage(outStr)
 }
+
+func (cmd HELP) Name() string {
+	return "HELP"
+}

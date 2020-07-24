@@ -24,3 +24,7 @@ func (cmd RNFR) Execute(args string) Replies.FTPReply {
 	cmd.cs.SetCommands(map[string]bool{"RNTO": true})
 	return Replies.CreateReplyPendingFurtherInformation()
 }
+
+func (cmd RNFR) Name() string {
+	return "RNFR"
+}

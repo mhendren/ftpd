@@ -34,3 +34,7 @@ func (cmd CWD) Execute(args string) Replies.FTPReply {
 	cmd.cs.SetPath(newDir)
 	return Replies.CreateReplyCommandOkay()
 }
+
+func (cmd CWD) Name() string {
+	return "CWD"
+}

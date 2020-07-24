@@ -394,7 +394,7 @@ func CreateReplyNeedAccountForStoring() FTPReply {
 	}
 }
 
-func CreateReplyCommandProtectionDenniedPolicy() FTPReply {
+func CreateReplyCommandProtectionDeniedPolicy() FTPReply {
 	return FTPReply{
 		Code:    533,
 		Message: "Command protection level denied for policy reasons",

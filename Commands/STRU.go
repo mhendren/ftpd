@@ -37,3 +37,7 @@ func (cmd STRU) Execute(args string) Replies.FTPReply {
 	}
 	return Replies.CreateReplyCommandNotImplementedForParameter()
 }
+
+func (cmd STRU) Name() string {
+	return "STRU"
+}

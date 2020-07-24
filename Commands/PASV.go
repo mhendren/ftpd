@@ -48,3 +48,7 @@ func (cmd PASV) Execute(_ string) Replies.FTPReply {
 	cmd.cs.DataConnection = dataConnection
 	return Replies.CreateReplyEnteringPassiveMode(cmd.cs.DataConnection.PassiveListener.Addr())
 }
+
+func (cmd PASV) Name() string {
+	return "PASV"
+}

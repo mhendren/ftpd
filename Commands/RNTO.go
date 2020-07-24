@@ -36,3 +36,7 @@ func (cmd RNTO) Execute(args string) Replies.FTPReply {
 	}
 	return Replies.CreateReplyCommandOkay()
 }
+
+func (cmd RNTO) Name() string {
+	return "RNTO"
+}

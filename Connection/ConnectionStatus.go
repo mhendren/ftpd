@@ -44,10 +44,12 @@ func (tm TransferMode) String() string {
 }
 
 type Status struct {
+	LastCommand        string
 	Connected          bool
 	CommandConnection  net.Conn
 	TextProto          *textproto.Conn
 	StandardConnection net.Conn
+	StandardTextProto  *textproto.Conn
 	DataConnected      bool
 	DataConnection     DataConnection
 	Remote             string

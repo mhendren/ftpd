@@ -49,7 +49,8 @@ func splitData(dataLine string) (string, string) {
 }
 
 func commandLoop(connectionSocket net.Conn, config Configuration.FTPConfig) {
-	connectionStatus.TextProto = textproto.NewConn(connectionSocket)
+	connectionStatus.StandardTextProto = textproto.NewConn(connectionSocket)
+	connectionStatus.TextProto = connectionStatus.StandardTextProto
 
 	for connectionStatus.IsConnected() {
 		line, err := connectionStatus.TextProto.ReadLine()
@@ -73,6 +74,7 @@ func commandLoop(connectionSocket net.Conn, config Configuration.FTPConfig) {
 			continue
 		}
 		connectionStatus.SendFTPReply(commandFunction.Execute(args))
+		connectionStatus.LastCommand = commandFunction.Name()
 	}
 }
 
@@ -83,10 +85,10 @@ func connectionHandle(connectionSocket net.Conn, config Configuration.FTPConfig)
 		_, _ = fmt.Fprintf(os.Stderr, "Certificate error: %v", err)
 	}
 	security := Connection.Security{
-		IsSecure:    false,
-		Certificate: cert,
-		CertFile:    config.AuthCertFile,
-		KeyFile:     config.AuthKeyFile,
+		SecureCommandChannel: false,
+		Certificate:          cert,
+		CertFile:             config.AuthCertFile,
+		KeyFile:              config.AuthKeyFile,
 		Config: &tls.Config{
 			Certificates:             []tls.Certificate{cert},
 			MinVersion:               tls.VersionTLS12,
@@ -101,6 +103,7 @@ func connectionHandle(connectionSocket net.Conn, config Configuration.FTPConfig)
 		},
 		ProtectedBSize:    -1,
 		SecurityMechanism: Connection.SecurityTLS{},
+		CCCStatus:         config.CCCStatus,
 	}
 	connectionStatus = Connection.Status{
 		Connected:          false,

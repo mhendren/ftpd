@@ -77,3 +77,7 @@ func (cmd EPSV) Execute(args string) Replies.FTPReply {
 	cmd.cs.DataConnection = dataConnection
 	return Replies.CreateReplyEnteringExtendedPassiveMode(cmd.cs.DataConnection.PassiveListener.Addr())
 }
+
+func (cmd EPSV) Name() string {
+	return "EPSV"
+}
