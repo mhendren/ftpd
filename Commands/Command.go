@@ -65,7 +65,7 @@ func GetCommandMap(cs *Connection.Status, config Configuration.FTPConfig) map[st
 
 		// RFC-2389 Command Set
 		"FEAT": FEAT{cs: cs, config: config},
-		"OPTS": NotImplemented{},
+		"OPTS": OPTS{cs: cs, config: config},
 
 		// RFC-2428 Command Set
 		"EPRT": EPRT{cs: cs},
