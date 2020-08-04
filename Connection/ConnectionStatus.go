@@ -1,6 +1,7 @@
 package Connection
 
 import (
+	"FTPserver/Options"
 	"FTPserver/Replies"
 	"fmt"
 	"net"
@@ -71,6 +72,7 @@ type Status struct {
 	PreferredEProtocol int
 	EPSVAll            bool
 	Security           Security
+	Options            Options.Options
 }
 
 func (cs *Status) Connect() {
